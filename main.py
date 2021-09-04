@@ -28,18 +28,30 @@ def get_entity_details(entity_name):
     first_result_page = BeautifulSoup(
         urllib.request.urlopen(first_link).read(), "html.parser")
 
-    details["company_name"] = first_result_page.find(
-        "p", class_="heading-xlarge").text.strip()
-    details["registered_address"] = first_result_page.find(
-        "dt", text="Registered office address").next_sibling.next_sibling.text.strip()
-    details["company_status"] = first_result_page.find(
-        "dt", text="Company status").next_sibling.next_sibling.text.strip()
-    details["company_type"] = first_result_page.find(
-        "dt", text="Company type").next_sibling.next_sibling.text.strip()
-    details["incorporated_on"] = first_result_page.find(
-        "dt", text="Incorporated on").next_sibling.next_sibling.text.strip()
+    try:
+        details["company_name"] = first_result_page.find(
+            "p", class_="heading-xlarge").text.strip()
+    except:
+        pass
+    details["registered_address"] = extract_dd_element(
+        first_result_page, "Registered office address")
+    details["company_status"] = extract_dd_element(
+        first_result_page, "Company status")
+    details["company_type"] = extract_dd_element(
+        first_result_page, "Company Type")
+    details["incorporated_on"] = extract_dd_element(
+        first_result_page, "Incorporated on")
 
     return details
+
+
+def extract_dd_element(result_page, dt_name):
+    try:
+        return_val = result_page.find(
+            "dt", text="dt_name").next_sibling.next_sibling.text.strip()
+    except:
+        return_val = ""
+    return return_val
 
 
 # function that searches the entity using query in the URL
