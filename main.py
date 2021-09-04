@@ -1,4 +1,7 @@
+from urllib import *
+import urllib.request
 from bs4 import BeautifulSoup
+import json
 
 # Go to the Website:
 # https://find-and-update.company-information.service.gov.uk/search
@@ -10,28 +13,46 @@ from bs4 import BeautifulSoup
 
 
 def get_entity_details(entity_name):
-    host = 'https://find-and-update.company-information.service.gov.uk'
+    host = "https://find-and-update.company-information.service.gov.uk"
     details = {
-        'company_name': None,
-        'registered_address': None,
-        'company_status': None,
-        'company_type': None,
-        'incorporated_on': None}
-    # functions will run here
-    # ...
-    # ...
+        "company_name": None,
+        "registered_address": None,
+        "company_status": None,
+        "company_type": None,
+        "incorporated_on": None}
+
+    bs_obj = run_search(host, entity_name)
+    # todo handle zero results
+    # todo handle http error
+    first_link = host + bs_obj.find(id="results").find("a").get("href")
+
+    first_result_page = BeautifulSoup(
+        urllib.request.urlopen(first_link).read(), "html.parser")
+
+    details["company_name"] = first_result_page.find(
+        "p", class_="heading-xlarge").text
+    details["registered_address"] = first_result_page.find(
+        "dt", text="Registered office address").next_sibling.next_sibling.text.strip()
+    details["company_status"] = first_result_page.find(
+        "dt", text="Company status").next_sibling.next_sibling.text.strip()
+    details["company_type"] = first_result_page.find(
+        "dt", text="Company type").next_sibling.next_sibling.text.strip()
+    details["incorporated_on"] = first_result_page.find(
+        "dt", text="Incorporated on").next_sibling.next_sibling.text.strip()
+
     return details
 
 
 # function that searches the entity using php query in the URL
 def run_search(host, entity_name):
-
     # todo, sanitise host into URL format
-    search_url = host + "search?q=" + entity_name
-    # with urllib.request.urlopen(search_url) as search_url_page:
-    #    return search_url_page.read()
+    search_url = host + "/search?q=" + entity_name
+    with urllib.request.urlopen(search_url) as search_url_page:
+        #
+        bs_obj = BeautifulSoup(search_url_page.read(), "html.parser")
+        return bs_obj
 
-    # we're looking for the first element of type=company in the list id=results
+    # We're looking for the first element of type=company in the list id=results
 
 
 # function to search inital details
@@ -39,13 +60,8 @@ def run_search(host, entity_name):
     # use a CSS selector for input['search'] to enter search
     # etc
 
-# solution NOT using selenium:
-
-# import module that can run REST requests
-# send a rest request for URL https://find-and-update.company-information.service.gov.uk/search with search "entity name"
-# return data in the format it returns in
-# transform data into the dictionary given
-
 if __name__ == "__main__":
     print("Hello!")
-    pass
+
+    print(json.dumps(get_entity_details("Barclays")))
+    print(json.dumps(get_entity_details("seanmizen.com")))
