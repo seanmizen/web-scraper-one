@@ -30,7 +30,7 @@ def get_entity_details(entity_name):
         urllib.request.urlopen(first_link).read(), "html.parser")
 
     details["company_name"] = first_result_page.find(
-        "p", class_="heading-xlarge").text
+        "p", class_="heading-xlarge").text.strip()
     details["registered_address"] = first_result_page.find(
         "dt", text="Registered office address").next_sibling.next_sibling.text.strip()
     details["company_status"] = first_result_page.find(
@@ -55,13 +55,6 @@ def run_search(host, entity_name):
     # We're looking for the first element of type=company in the list id=results
 
 
-# function to search inital details
-    # identify the seach pane element
-    # use a CSS selector for input['search'] to enter search
-    # etc
-
 if __name__ == "__main__":
-    print("Hello!")
-
     print(json.dumps(get_entity_details("Barclays")))
     print(json.dumps(get_entity_details("seanmizen.com")))
