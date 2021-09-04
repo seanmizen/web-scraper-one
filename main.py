@@ -48,7 +48,7 @@ def get_entity_details(entity_name):
 def extract_dd_element(result_page, dt_name):
     try:
         return_val = result_page.find(
-            "dt", text="dt_name").next_sibling.next_sibling.text.strip()
+            "dt", text=dt_name).next_sibling.next_sibling.text.strip()
     except:
         return_val = ""
     return return_val
