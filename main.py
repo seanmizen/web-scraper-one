@@ -32,7 +32,7 @@ def get_entity_details(entity_name):
         details["company_name"] = first_result_page.find(
             "p", class_="heading-xlarge").text.strip()
     except:
-        pass
+        details["company_name"] = ""
     details["registered_address"] = extract_dd_element(
         first_result_page, "Registered office address")
     details["company_status"] = extract_dd_element(
