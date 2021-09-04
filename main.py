@@ -1,4 +1,3 @@
-from urllib import *
 import urllib.request
 from bs4 import BeautifulSoup
 import json
@@ -43,7 +42,7 @@ def get_entity_details(entity_name):
     return details
 
 
-# function that searches the entity using php query in the URL
+# function that searches the entity using query in the URL
 def run_search(host, entity_name):
     # todo, sanitise host into URL format
     search_url = host + "/search?q=" + entity_name
